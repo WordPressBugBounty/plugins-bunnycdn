@@ -1,4 +1,5 @@
 <?php
+
 // bunny.net WordPress Plugin
 // Copyright (C) 2024  BunnyWay d.o.o.
 //
@@ -14,26 +15,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 declare(strict_types=1);
 
-// Don't load directly.
-if (!defined('ABSPATH')) {
-    exit('-1');
-}
+namespace Bunny\Wordpress\Service\Exception;
 
-/**
- * @var \Bunny\Wordpress\Admin\Container $this
- * @var string $overviewUrlSafe
- */
-?>
-<section class="bn-section">
-    <div class="bn-section__title bn-mb-0">Yaaay, success!</div>
-</section>
-<section class="bn-section">
-    <img src="<?php echo esc_attr($this->assetUrl('wizard-step3.svg')) ?>" height="200" alt="">
-    <div class="alert green bn-mt-3">
-        Your site is now connected to bunny.net.
-    </div>
-    <a href="<?php echo $overviewUrlSafe ?>" class="bn-button bn-button--primary">Go to overview page</a>
-</section>
+class InvalidSQLQueryException extends \Exception
+{
+    /** @var string */
+    protected $message = 'Invalid SQL query';
+}
