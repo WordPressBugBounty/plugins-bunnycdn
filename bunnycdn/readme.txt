@@ -3,7 +3,7 @@ Contributors: bunnycdn
 Tags: cdn, content delivery network, performance, bandwidth
 Requires at least: 6.0
 Tested up to: 6.6
-Stable tag: 2.2.21
+Stable tag: 2.2.22
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -40,6 +40,9 @@ Bunny.net Terms of Service: https://bunny.net/tos/
 Bunny.net Privacy Policy: https://bunny.net/privacy/
 
 == Changelog ==
+
+= 2.2.22 =
+* offloader: best-effort support for non-image files
 
 = 2.2.21 =
 * Fixed a few of javascript errors

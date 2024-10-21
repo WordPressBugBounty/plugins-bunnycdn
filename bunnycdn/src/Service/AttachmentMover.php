@@ -128,10 +128,10 @@ class AttachmentMover
     private function moveAttachmentToCDN(int $attachmentId, bool $override = false): void
     {
         $imageMetadata = wp_get_attachment_metadata($attachmentId);
-        if (false === $imageMetadata || !isset($imageMetadata['file'])) {
+        if (false === $imageMetadata) {
             throw new \Exception('File not found.');
         }
-        if (str_starts_with($imageMetadata['file'], 'http://') || str_starts_with($imageMetadata['file'], 'https://')) {
+        if (isset($imageMetadata['file']) && (str_starts_with($imageMetadata['file'], 'http://') || str_starts_with($imageMetadata['file'], 'https://'))) {
             throw new \Exception('Remote files are not supported.');
         }
         $attachedFileMetadata = get_post_meta($attachmentId, '_wp_attached_file', true);
