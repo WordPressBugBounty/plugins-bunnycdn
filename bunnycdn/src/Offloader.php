@@ -139,9 +139,14 @@ class Offloader
 
     public function wp_delete_file(string $file): string
     {
-        $remote_path = bunnycdn_offloader_remote_path($file);
+        if ('' === $file) {
+            return '';
+        }
+        $to_delete = bunnycdn_offloader_filter_delete_paths([bunnycdn_offloader_remote_path($file)]);
         try {
-            $this->getStorage()->delete($remote_path);
+            foreach ($to_delete as $remote_path) {
+                $this->getStorage()->delete($remote_path);
+            }
         } catch (\Bunny\Storage\FileNotFoundException $e) {
             // noop: this has likely already been deleted in the delete_attachment() method
         } catch (\Exception $e) {
