@@ -1,7 +1,7 @@
 <?php
 
 // bunny.net WordPress Plugin
-// Copyright (C) 2024  BunnyWay d.o.o.
+// Copyright (C) 2024-2025 BunnyWay d.o.o.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -123,5 +123,25 @@ namespace {
         }
 
         return false;
+    }
+    /**
+     * @param array<string, bool> $options
+     */
+    function bunnycdn_stream_video_embed(string $videoId, int $libraryId, array $options): string
+    {
+        $options['autoplay'] = $options['autoplay'] ?? false;
+        $options['loop'] = $options['loop'] ?? false;
+        $options['muted'] = $options['muted'] ?? false;
+        $options['preload'] = $options['preload'] ?? true;
+        $options['responsive'] = $options['responsive'] ?? true;
+        $options = array_map(function ($v) {
+            return $v ? 'true' : 'false';
+        }, $options);
+        $iframeUrl = 'https://iframe.mediadelivery.net/embed/'.$libraryId.'/'.$videoId.'?autoplay='.$options['autoplay'].'&loop='.$options['loop'].'&muted='.$options['muted'].'&preload='.$options['preload'].'&responsive='.$options['responsive'];
+        $html = '<div style="position:relative;padding-top:56.25%;" class="bunny-stream-video">';
+        $html .= '<iframe src="'.$iframeUrl.'" loading="lazy" style="border:0;position:absolute;top:0;height:100%;width:100%;" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe>';
+        $html .= '</div>';
+
+        return $html;
     }
 }

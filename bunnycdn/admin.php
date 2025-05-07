@@ -1,7 +1,7 @@
 <?php
 
 // bunny.net WordPress Plugin
-// Copyright (C) 2024  BunnyWay d.o.o.
+// Copyright (C) 2024-2025 BunnyWay d.o.o.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -69,6 +69,7 @@ add_action('admin_menu', function () {
         'cdn' => 'CDN',
         'offloader' => 'Offloader',
         'optimizer' => 'Optimizer',
+        'stream' => 'Stream',
         'fonts' => 'Fonts',
     ];
 
@@ -76,6 +77,7 @@ add_action('admin_menu', function () {
         unset($submenus['cdn']);
         unset($submenus['offloader']);
         unset($submenus['optimizer']);
+        unset($submenus['stream']);
     }
 
     foreach ($submenus as $slug => $text) {
@@ -127,6 +129,13 @@ add_action('load-toplevel_page_bunnycdn', function () {
     wp_enqueue_script('bunnycdn-admin', $container->assetUrl('admin.js'), [], BUNNYCDN_WP_VERSION);
     wp_enqueue_script('bunnycdn-admin-redirect', $container->assetUrl('redirect.js'), [], BUNNYCDN_WP_VERSION, true);
     wp_enqueue_style('bunnycdn-admin', $container->assetUrl('admin.css'), [], BUNNYCDN_WP_VERSION);
+
+    if ('stream' === $section) {
+        add_thickbox();
+        wp_enqueue_script('bunnycdn-admin-thickbox', $container->assetUrl('admin-thickbox.js'), [], BUNNYCDN_WP_VERSION);
+        wp_enqueue_script('bunnycdn-slimselect', $container->assetUrl('slimselect.min.js'), [], BUNNYCDN_WP_VERSION);
+        wp_enqueue_style('bunnycdn-slimselect', $container->assetUrl('slimselect.min.css'), [], BUNNYCDN_WP_VERSION);
+    }
 });
 
 add_action('admin_notices', function () {
