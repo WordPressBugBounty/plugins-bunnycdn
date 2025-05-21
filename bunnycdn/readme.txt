@@ -3,7 +3,7 @@ Contributors: bunnycdn
 Tags: cdn, content delivery network, performance, bandwidth, stream, video, embed
 Requires at least: 6.7
 Tested up to: 6.8
-Stable tag: 2.3.1
+Stable tag: 2.3.2
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -51,6 +51,9 @@ Replace `197133` with your Stream Library ID and `dc48a09e-d9bb-420a-83d7-72dc23
 The extra parameters supported are: `autoplay`, `loop`, `muted`, `preload`, `responsive`.
 
 == Changelog ==
+
+= 2.3.2 =
+* stream: fix 404 when using shortcode
 
 = 2.3.1 =
 * stream: properly escape video_id

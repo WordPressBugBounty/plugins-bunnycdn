@@ -129,7 +129,7 @@ namespace {
      */
     function bunnycdn_stream_video_embed(string $videoId, int $libraryId, array $options): string
     {
-        $videoId = preg_replace('/[^a-fA-F0-9]/', '', $videoId);
+        $videoId = preg_replace('/[^a-fA-F0-9-]/', '', $videoId);
         $options['autoplay'] = $options['autoplay'] ?? false;
         $options['loop'] = $options['loop'] ?? false;
         $options['muted'] = $options['muted'] ?? false;
