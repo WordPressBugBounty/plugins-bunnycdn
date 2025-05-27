@@ -36,13 +36,15 @@ class Details
     private float $charges;
     /** @var Edgerule[] */
     private array $edgerules;
+    private bool $zoneSecurityEnabled;
+    private string $zoneSecurityKey;
 
     /**
      * @param string[] $hostnames
      * @param string[] $corsExtensions
      * @param Edgerule[] $edgerules
      */
-    public function __construct(int $id, string $name, array $hostnames, bool $enableCors, array $corsExtensions, Optimizer $config, int $bandwidthUsed, float $charges, array $edgerules)
+    public function __construct(int $id, string $name, array $hostnames, bool $enableCors, array $corsExtensions, Optimizer $config, int $bandwidthUsed, float $charges, array $edgerules, bool $zoneSecurityEnabled, string $zoneSecurityKey)
     {
         $this->id = $id;
         $this->name = $name;
@@ -53,6 +55,8 @@ class Details
         $this->bandwidthUsed = $bandwidthUsed;
         $this->charges = $charges;
         $this->edgerules = $edgerules;
+        $this->zoneSecurityEnabled = $zoneSecurityEnabled;
+        $this->zoneSecurityKey = $zoneSecurityKey;
     }
 
     public function getId(): int
@@ -117,5 +121,15 @@ class Details
     public function getEdgerules(): array
     {
         return $this->edgerules;
+    }
+
+    public function isZoneSecurityEnabled(): bool
+    {
+        return $this->zoneSecurityEnabled;
+    }
+
+    public function getZoneSecurityKey(): string
+    {
+        return $this->zoneSecurityKey;
     }
 }

@@ -25,6 +25,7 @@ if (!defined('ABSPATH')) {
 /**
  * @var \Bunny\Wordpress\Admin\Container $this
  * @var string|null $error
+ * @var string|null $successMessage
  * @var bool $canReset
  * @var bool $isAgencyMode
  */
@@ -33,6 +34,11 @@ if (!defined('ABSPATH')) {
     <?php if (null !== $error): ?>
         <div class="alert red bn-m-5">
             <?php echo esc_html($error) ?>
+        </div>
+    <?php endif; ?>
+    <?php if (null !== $successMessage): ?>
+        <div class="alert green bn-m-5">
+            <?php echo esc_html($successMessage) ?>
         </div>
     <?php endif; ?>
     <?php if ($canReset): ?>
@@ -47,6 +53,30 @@ if (!defined('ABSPATH')) {
             </form>
         </section>
         <?php endif; ?>
+        <section class="bn-section">
+            <form method="POST" autocomplete="off">
+                <p><?php echo esc_html__('The operation resets the cache for the Token Authentication feature in Bunny Stream. You might need to use this if:', 'bunnycdn') ?></p>
+                <ol>
+                    <li><?php echo sprintf(
+                        /* translators: 1: <a href=...>dash.bunny.net</a> */
+                        esc_html__('A Token Authentication key was changed in %1$s, and the video embed is now broken;', 'bunnycdn'),
+                        '<a href="https://dash.bunny.net" target="_blank">dash.bunny.net</a>'
+                    ) ?></li>
+                    <li>
+                        <?php echo esc_html__('The bunny.net plugin was converted into Agency Mode, and you want to completely remove the secrets related to Bunny Stream.', 'bunnycdn') ?>
+                        <?php echo sprintf(
+                            /* translators: 1: <strong>; 2: </strong> */
+                            esc_html__('%1$sIMPORTANT:%2$s this will break videos embedded from private Bunny Stream libraries.', 'bunnycdn'),
+                            '<strong>',
+                            '</strong>',
+                        ) ?>
+                    </li>
+                </ol>
+                <button type="submit" class="bunnycdn-button bunnycdn-button--secondary bn-mt-4" id="reset-stream-token-authentication-btn"><?php echo esc_html__('Reset Token Authentication keys', 'bunnycdn') ?></button>
+                <input type="hidden" name="reset_stream_token_authentication" value="yes">
+                <?php echo wp_nonce_field('bunnycdn-save-reset') ?>
+            </form>
+        </section>
         <section class="bn-section bn-section--no-divider">
             <p class="bn-m-0"><?php echo sprintf(
                 /* translators: 1: <a href=...>dash.bunny.net</a> */

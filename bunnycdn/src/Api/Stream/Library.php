@@ -25,13 +25,15 @@ class Library
     private string $name;
     private string $accessKey;
     private int $pullzoneId;
+    private bool $embedTokenAuthentication;
 
-    public function __construct(int $id, string $name, string $accessKey, int $pullzoneId)
+    public function __construct(int $id, string $name, string $accessKey, int $pullzoneId, bool $embedTokenAuthentication)
     {
         $this->id = $id;
         $this->name = $name;
         $this->accessKey = $accessKey;
         $this->pullzoneId = $pullzoneId;
+        $this->embedTokenAuthentication = $embedTokenAuthentication;
     }
 
     /**
@@ -39,7 +41,7 @@ class Library
      */
     public static function fromApiResponse(array $data): Library
     {
-        return new self($data['Id'], $data['Name'], $data['ApiKey'], $data['PullZoneId']);
+        return new self($data['Id'], $data['Name'], $data['ApiKey'], $data['PullZoneId'], (bool) $data['PlayerTokenAuthenticationEnabled']);
     }
 
     public function getId(): int
@@ -60,5 +62,10 @@ class Library
     public function getPullzoneId(): int
     {
         return $this->pullzoneId;
+    }
+
+    public function isEmbedTokenAuthentication(): bool
+    {
+        return $this->embedTokenAuthentication;
     }
 }

@@ -72,7 +72,7 @@ class Client
         $bandwidthUsed = (int) $data['MonthlyBandwidthUsed'];
         $charges = (float) $data['MonthlyCharges'];
 
-        return new Pullzone\Details($data['Id'], $data['Name'], $hostnames, $data['EnableAccessControlOriginHeader'], $data['AccessControlOriginHeaderExtensions'], $config, $bandwidthUsed, $charges, $edgerules);
+        return new Pullzone\Details($data['Id'], $data['Name'], $hostnames, $data['EnableAccessControlOriginHeader'], $data['AccessControlOriginHeaderExtensions'], $config, $bandwidthUsed, $charges, $edgerules, (bool) $data['ZoneSecurityEnabled'], $data['ZoneSecurityKey']);
     }
 
     public function getPullzoneStatistics(int $id, \DateTime $dateFrom, \DateTime $dateTo): Pullzone\Statistics

@@ -27,7 +27,7 @@ if (!defined('ABSPATH')) {
 Plugin Name: bunny.net
 Plugin URI: https://bunny.net/
 Description: Speed up your website with bunny.net Content Delivery Network. This plugin allows you to easily enable Bunny CDN on your WordPress website and enjoy greatly improved loading times around the world.
-Version: 2.3.2
+Version: 2.3.3
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
@@ -37,7 +37,7 @@ License: GPLv3
 Text Domain: bunnycdn
 */
 
-const BUNNYCDN_WP_VERSION = '2.3.2';
+const BUNNYCDN_WP_VERSION = '2.3.3';
 
 require_once __DIR__.'/src/functions.php';
 
@@ -66,7 +66,9 @@ add_action('init', function () {
         require_once __DIR__.'/frontend.php';
     }
 
-    register_block_type(__DIR__.'/blocks/build/stream-video');
+    register_block_type(__DIR__.'/blocks/build/stream-video', [
+        'render_callback' => 'bunnycdn_stream_video_render_block',
+    ]);
 });
 
 add_action('rest_api_init', function () {
@@ -74,40 +76,4 @@ add_action('rest_api_init', function () {
     $controller->register();
 });
 
-add_shortcode('bunnycdn_stream_video', function ($params) {
-    $videoId = null;
-    $libraryId = null;
-
-    $options = [
-        'responsive' => true,
-        'autoplay' => false,
-        'preload' => false,
-        'loop' => false,
-        'muted' => false,
-    ];
-
-    // video ID: [bunnycdn_stream_video id="video_id"]
-    if (isset($params['id']) && is_string($params['id'])) {
-        $videoId = $params['id'];
-    }
-
-    // library ID: [bunnycdn_stream_video library=123]
-    if (isset($params['library']) && is_string($params['library'])) {
-        $libraryId = (int) $params['library'];
-    }
-
-    // other parameters: [bunnycdn_stream_video loop=true autoplay=false]
-    foreach ($params as $key => $value) {
-        if (!isset($options[$key])) {
-            continue;
-        }
-
-        $options[$key] = (bool) $value;
-    }
-
-    if (empty($videoId) || empty($libraryId)) {
-        return '[bunnycdn_stream_video error: invalid shortcode]';
-    }
-
-    return bunnycdn_stream_video_embed($videoId, $libraryId, $options);
-});
+add_shortcode('bunnycdn_stream_video', 'bunnycdn_stream_video_render_shortcode');

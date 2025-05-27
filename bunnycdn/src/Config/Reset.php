@@ -54,6 +54,7 @@ class Reset
         delete_option('bunnycdn_stream_allow_uploads');
         delete_option('bunnycdn_wizard_finished');
         delete_option('bunnycdn_wizard_mode');
+        self::clearTokenAuthenticationCachedKeys();
     }
 
     public static function convertToAgencyMode(): void
@@ -61,5 +62,12 @@ class Reset
         update_option('bunnycdn_wizard_mode', 'agency');
         delete_option('bunnycdn_api_key');
         delete_option('bunnycdn_api_user');
+    }
+
+    public static function clearTokenAuthenticationCachedKeys(): void
+    {
+        global $wpdb;
+        $sql = $wpdb->prepare("DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", '_transient_bunnycdn_stream_library_token_%');
+        $wpdb->query($sql);
     }
 }

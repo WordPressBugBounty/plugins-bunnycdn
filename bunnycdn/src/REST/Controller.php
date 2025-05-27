@@ -21,6 +21,7 @@ namespace Bunny\Wordpress\REST;
 
 use Bunny\Wordpress\Api\Client as ApiClient;
 use Bunny\Wordpress\Api\Exception\NotFoundException;
+use Bunny\Wordpress\Api\Pullzone;
 use Bunny\Wordpress\Api\Stream\Video;
 use Bunny\Wordpress\Config\Offloader as OffloaderConfig;
 use Bunny\Wordpress\Config\Stream as StreamConfig;
@@ -100,7 +101,7 @@ class Controller
                     continue;
                 }
                 $collections = $this->apiClient->getStreamCollections($videoLibrary);
-                $libraries[] = ['value' => $videoLibrary->getId(), 'label' => $videoLibrary->getName(), 'collections' => array_map(fn ($item) => ['value' => $item->getId(), 'label' => $item->getName()], $collections)];
+                $libraries[] = ['value' => $videoLibrary->getId(), 'label' => $videoLibrary->getName(), 'collections' => array_map(fn ($item) => ['value' => $item->getId(), 'label' => $item->getName()], $collections), 'token_authentication' => $videoLibrary->isEmbedTokenAuthentication()];
             }
         } catch (\Bunny_WP_Plugin\GuzzleHttp\Exception\ConnectException $e) {
             return new \WP_REST_Response(['success' => false, 'message' => 'Could not connect to the bunny.net API.'], 500);
@@ -135,7 +136,7 @@ class Controller
                 throw new NotFoundException();
             }
             $library = $this->apiClient->getStreamLibrary($libraryId);
-            $pullzone = $this->apiClient->getPullzoneById($library->getPullzoneId());
+            $pullzone = $this->apiClient->getPullzoneDetails($library->getPullzoneId());
         } catch (NotFoundException $e) {
             return new \WP_REST_Response(['success' => false, 'message' => 'Video Library not found.'], 404);
         } catch (\Bunny_WP_Plugin\GuzzleHttp\Exception\ConnectException $e) {
@@ -148,7 +149,7 @@ class Controller
             if (Video::STATUS_FINISHED !== $video->getStatus()) {
                 continue;
             }
-            $result[] = ['uuid' => $video->getGuid(), 'title' => $video->getTitle(), 'duration' => $video->getHumanLength(), 'thumbnail' => sprintf('https://%s/%s/%s', $pullzone->getHostnames()[0], $video->getGuid(), $video->getThumbnailFilename()), 'preview' => sprintf('https://%s/%s/%s', $pullzone->getHostnames()[0], $video->getGuid(), 'preview.webp'), 'collection_id' => $video->getCollectionId()];
+            $result[] = ['uuid' => $video->getGuid(), 'title' => $video->getTitle(), 'duration' => $video->getHumanLength(), 'thumbnail' => $this->getVideoThumbnailUrl($pullzone, $video), 'preview' => $this->getVideoPreviewUrl($pullzone, $video), 'collection_id' => $video->getCollectionId()];
         }
 
         return new \WP_REST_Response(['success' => true, 'items' => $result]);
@@ -220,5 +221,38 @@ class Controller
     public function streamLibraryCanUpload(\WP_REST_Request $request): bool
     {
         return !$this->isAgencyMode && current_user_can('upload_files');
+    }
+
+    private function getVideoPreviewUrl(Pullzone\Details $pullzone, Video $video): string
+    {
+        $url = sprintf('https://%s/%s/%s', $pullzone->getHostnames()[0], $video->getGuid(), 'preview.webp');
+        if (!$pullzone->isZoneSecurityEnabled()) {
+            return $url;
+        }
+
+        return $this->signUrl($url, $pullzone->getZoneSecurityKey(), 300);
+    }
+
+    private function getVideoThumbnailUrl(Pullzone\Details $pullzone, Video $video): string
+    {
+        $url = sprintf('https://%s/%s/%s', $pullzone->getHostnames()[0], $video->getGuid(), $video->getThumbnailFilename());
+        if (!$pullzone->isZoneSecurityEnabled()) {
+            return $url;
+        }
+
+        return $this->signUrl($url, $pullzone->getZoneSecurityKey(), 3600);
+    }
+
+    private function signUrl(string $url, string $securityKey, int $expirationInSeconds): string
+    {
+        $url_path = (string) parse_url($url, \PHP_URL_PATH);
+        $expires = time() + $expirationInSeconds;
+        $hashableBase = $securityKey.$url_path.$expires;
+        $token = hash('sha256', $hashableBase, true);
+        $token = base64_encode($token);
+        $token = strtr($token, '+/', '-_');
+        $token = str_replace('=', '', $token);
+
+        return sprintf('%s?token=%s&expires=%d', $url, $token, $expires);
     }
 }
