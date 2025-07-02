@@ -167,9 +167,6 @@ namespace {
      */
     function bunnycdn_stream_video_render_block(array $params, ?string $content = null): string
     {
-        if (null !== $content && strlen($content) > 0) {
-            return $content;
-        }
         $videoId = null;
         $libraryId = null;
         if (isset($params['video_id']) && is_string($params['video_id'])) {

@@ -59,16 +59,12 @@ class MigrateToWP65
         if (null === $pullzoneId) {
             return;
         }
-        try {
-            $pullzone = $this->api->getPullzoneById($pullzoneId);
-            $extensions = $pullzone->getCorsHeaderExtensions();
-            if (!in_array('js', $extensions, true)) {
-                $extensions[] = 'js';
-                $this->api->updatePullzone($pullzoneId, ['AccessControlOriginHeaderExtensions' => $extensions]);
-            }
-            update_option(self::OPTION_KEY, true);
-        } catch (\Exception $e) {
-            trigger_error('bunnycdn: could not upgrade pullzone to support WordPress 6.5: '.$e->getMessage(), \E_USER_ERROR);
+        $pullzone = $this->api->getPullzoneById($pullzoneId);
+        $extensions = $pullzone->getCorsHeaderExtensions();
+        if (!in_array('js', $extensions, true)) {
+            $extensions[] = 'js';
+            $this->api->updatePullzone($pullzoneId, ['AccessControlOriginHeaderExtensions' => $extensions]);
         }
+        update_option(self::OPTION_KEY, true);
     }
 }
