@@ -59,8 +59,8 @@ class MigrateToWP65
         if (null === $pullzoneId) {
             return;
         }
-        $pullzone = $this->api->getPullzoneById($pullzoneId);
-        $extensions = $pullzone->getCorsHeaderExtensions();
+        $pullzone = $this->api->getPullzoneDetails($pullzoneId);
+        $extensions = $pullzone->getCorsExtensions();
         if (!in_array('js', $extensions, true)) {
             $extensions[] = 'js';
             $this->api->updatePullzone($pullzoneId, ['AccessControlOriginHeaderExtensions' => $extensions]);

@@ -39,16 +39,6 @@ class Client
     }
 
     /**
-     * @return Pullzone\Info[]
-     */
-    public function listPullzones(): array
-    {
-        $data = $this->request('GET', 'pullzone');
-
-        return array_map(fn ($item) => Pullzone\Info::fromApiResponse($item), $data);
-    }
-
-    /**
      * @return array<string, mixed>
      */
     private function getPullzoneData(int $id): array
@@ -300,8 +290,8 @@ class Client
 
     public function findPullzoneByName(string $name): Pullzone\Info
     {
-        $rows = $this->request('GET', sprintf('pullzone/?search=%s', $name));
-        foreach ($rows as $data) {
+        $rows = $this->request('GET', sprintf('pullzone?search=%s', $name));
+        foreach ($rows['Items'] as $data) {
             if ($data['Name'] !== $name) {
                 continue;
             }
@@ -309,6 +299,23 @@ class Client
             return Pullzone\Info::fromApiResponse($data);
         }
         throw new \Exception('Could not find pullzone.');
+    }
+
+    /**
+     * @return Pullzone\Info[]
+     */
+    public function searchPullzonesByOriginUrl(string $originUrl): array
+    {
+        $rows = $this->request('GET', sprintf('pullzone?search=%s', $originUrl));
+        $result = [];
+        foreach ($rows['Items'] as $data) {
+            if ($data['OriginUrl'] !== $originUrl) {
+                continue;
+            }
+            $result[] = Pullzone\Info::fromApiResponse($data);
+        }
+
+        return $result;
     }
 
     /**
