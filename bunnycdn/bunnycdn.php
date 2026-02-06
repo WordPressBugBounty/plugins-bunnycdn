@@ -27,9 +27,9 @@ if (!defined('ABSPATH')) {
 Plugin Name: bunny.net
 Plugin URI: https://bunny.net/
 Description: Speed up your website with bunny.net Content Delivery Network. This plugin allows you to easily enable Bunny CDN on your WordPress website and enjoy greatly improved loading times around the world.
-Version: 2.3.5
+Version: 2.3.8
 Requires at least: 6.7
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 8.1
 Author: bunny.net
 Author URI: https://bunny.net/
@@ -37,7 +37,7 @@ License: GPLv3
 Text Domain: bunnycdn
 */
 
-const BUNNYCDN_WP_VERSION = '2.3.5';
+const BUNNYCDN_WP_VERSION = '2.3.8';
 
 require_once __DIR__.'/src/functions.php';
 
@@ -77,3 +77,6 @@ add_action('rest_api_init', function () {
 });
 
 add_shortcode('bunnycdn_stream_video', 'bunnycdn_stream_video_render_shortcode');
+
+add_filter('cron_schedules', 'bunnycdn_cron_schedules');
+add_filter('bunnycdn_offloader_cron_hook', 'bunnycdn_offloader_cron_hook');

@@ -17,5 +17,5 @@ namespace {
         throw new \RuntimeException($err);
     }
     require_once __DIR__ . '/composer/autoload_real.php';
-    return \ComposerAutoloaderInitfeee8c527db0357bf3c06e907f53ea95::getLoader();
+    return \ComposerAutoloaderInit0308d05e7f4841f6158588964b92e4b5::getLoader();
 }

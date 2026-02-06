@@ -29,6 +29,7 @@ use Bunny\Wordpress\Service\Exception\InvalidSQLQueryException;
 
 class Offloader
 {
+    private const CRON_HOOK = 'bunnycdn_offloader_cron_hook';
     private const PASSWORD_CHECK_OPTION_KEY = '_bunnycdn_offloader_last_password_check';
     private const PASSWORD_CHECK_TEST_PATH = '/.wpbunny';
     private const PASSWORD_CHECK_THRESHOLD_SECONDS = 60 * 5;
@@ -208,5 +209,17 @@ class Offloader
             }
         }
         $this->db->query('COMMIT');
+    }
+
+    public function cronEnable(): void
+    {
+        if (!wp_next_scheduled(self::CRON_HOOK)) {
+            wp_schedule_event(time(), 'minute', self::CRON_HOOK);
+        }
+    }
+
+    public function cronDisable(): void
+    {
+        wp_clear_scheduled_hook(self::CRON_HOOK);
     }
 }

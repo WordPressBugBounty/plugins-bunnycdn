@@ -70,7 +70,7 @@ class Index implements ControllerInterface
         if (!$isAjax && false !== get_option('bunnycdn')) {
             $url = add_query_arg(['s' => 'bunnycdn'], admin_url('plugins.php'));
             $message = '<p>We detected settings for a previous version of the bunny.net plugin. Please <a href="%s">re-activate the plugin</a> if you wish to upgrade the settings to the newer version.</p>';
-            bunny_polyfill_wp_admin_notice(sprintf($message, $url), ['type' => 'error']);
+            wp_admin_notice(sprintf($message, $url), ['type' => 'error']);
         }
         $domain = site_url();
         if (preg_match('#^https?://(?<host>[^/]+)/?.*$#', $domain, $matches) && !empty($matches['host'])) {

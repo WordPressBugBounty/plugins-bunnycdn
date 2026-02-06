@@ -187,6 +187,14 @@ if (!defined('ABSPATH')) {
                         <label for="offloader-sync-existing" class="bn-text-200-regular">Enable sync for existing media files</label>
                     </div>
                 </li>
+                <li class="bn-section bn-px-0 bn-section--split">
+                    <label class="bn-section__title bn-mt-0" for="offloader-cronjob">Enable cronjob</label>
+                    <div class="bn-section__content">
+                        <input type="checkbox" name="offloader[cronjob]" id="offloader-cronjob" class="bunnycdn-toggle" value="1" <?php echo $config->isCronjob() ? 'checked' : '' ?>>
+                        <label for="offloader-cronjob" class="bn-text-200-regular">Enable cronjob to sync existing files</label>
+                        <p class="bn-mt-4">Configures <a href="https://developer.wordpress.org/plugins/cron/" target="_blank">WP-cron</a> to sync one attachment every minute.</p>
+                    </div>
+                </li>
                 <li class="bn-section bn-px-0 bn-section--split" id="offloader-config-excluded-combobox">
                     <label class="bn-section__title" for="offloader-config-excluded">Excluded Paths</label>
                     <div class="bn-section__content">

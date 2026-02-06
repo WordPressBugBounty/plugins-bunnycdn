@@ -253,4 +253,35 @@ namespace {
     }
     const BUNNYCDN_STREAM_VIDEO_DEFAULTS = ['autoplay' => false, 'loop' => false, 'muted' => false, 'preload' => false, 'responsive' => true];
     const BUNNYCDN_STREAM_VIDEO_OPTIONS = ['autoplay' => 'boolean', 'captions' => 'string', 'chromecast' => 'boolean', 'disableAirplay' => 'boolean', 'disableIosPlayer' => 'boolean', 'loop' => 'boolean', 'muted' => 'boolean', 'playsinline' => 'boolean', 'preload' => 'boolean', 'rememberPosition' => 'boolean', 'responsive' => 'boolean', 'showHeatmap' => 'boolean', 'showSpeed' => 'boolean', 't' => 'string'];
+    /**
+     * @param array<array-key, array{interval: int, display: string}> $schedules
+     *
+     * @return array<array-key, array{interval: int, display: string}>
+     */
+    function bunnycdn_cron_schedules(array $schedules): array
+    {
+        $schedules['minute'] = ['interval' => 1, 'display' => esc_html__('Every Minute')];
+
+        return $schedules;
+    }
+    function bunnycdn_offloader_cron_hook(): void
+    {
+        $container = bunnycdn_container();
+        $offloaderConfig = $container->getOffloaderConfig();
+        if (!$offloaderConfig->isConfigured() || !$offloaderConfig->isEnabled() || !$offloaderConfig->isSyncExisting() || !$offloaderConfig->isCronjob()) {
+            return;
+        }
+        // check if there are files left to sync
+        $attachmentCounter = $container->getAttachmentCounter();
+        $count = $attachmentCounter->count();
+        if (0 === $count[\Bunny\Wordpress\Service\AttachmentCounter::LOCAL]) {
+            return;
+        }
+        // move attachments
+        $attachmentMover = $container->newAttachmentMover();
+        $result = $attachmentMover->perform(1);
+        if (true === $result['success']) {
+            update_option('_bunnycdn_offloader_last_sync', time());
+        }
+    }
 }

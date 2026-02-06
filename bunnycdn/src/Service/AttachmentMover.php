@@ -201,28 +201,26 @@ class AttachmentMover
             trigger_error(sprintf('bunnycdn: attachment %d (%s) had no local files during moveAttachmentToCDN', $attachmentId, $attachedFileMetadata), \E_USER_NOTICE);
         }
         // make sure at least the original file is available in the remote
-        try {
-            $fileInfo = $storage->info($fileRemote);
-            if (file_exists($file) && ($fileInfo->getSize() !== filesize($file) || $fileInfo->getChecksum() !== hash_file('sha256', $file))) {
-                throw new \Exception('Contents mismatched.');
+        $foundFile = false;
+        for ($attempt = 0; $attempt < 2; ++$attempt) {
+            try {
+                $fileInfo = $storage->info($fileRemote);
+                if (file_exists($file) && ($fileInfo->getSize() !== filesize($file) || $fileInfo->getChecksum() !== hash_file('sha256', $file))) {
+                    throw new \Exception('Contents mismatched.');
+                }
+                $foundFile = true;
+                break;
+            } catch (FileNotFoundException $e) {
+                trigger_error(sprintf('File %s could not be found in storage after upload, attempt %d', $fileRemote, $attempt), \E_USER_WARNING);
+                usleep(300);
+            } catch (\Exception $e) {
+                trigger_error(sprintf('Checking file %s failed: %s', $fileRemote, $e->getMessage()), \E_USER_WARNING);
             }
-        } catch (\Exception $e) {
+        }
+        if (!$foundFile) {
             throw new \Exception(sprintf('File %s could not be found in storage after upload.', $fileRemote));
         }
-        // start db transaction
-        $this->db->query('START TRANSACTION');
-        try {
-            // update metadata
-            update_post_meta($attachmentId, OffloaderUtils::WP_POSTMETA_KEY, 1);
-            delete_post_meta($attachmentId, OffloaderUtils::WP_POSTMETA_ATTEMPTS_KEY);
-            delete_post_meta($attachmentId, OffloaderUtils::WP_POSTMETA_ERROR);
-            delete_post_meta($attachmentId, OffloaderUtils::WP_POSTMETA_UPLOAD_LOCK_KEY);
-            // commit db changes
-            $this->db->query('COMMIT');
-        } catch (\Exception $e) {
-            $this->db->query('ROLLBACK');
-            throw $e;
-        }
+        $this->markAttachmentAsOffloaded($attachmentId);
         // delete original files
         foreach ($filesToUpload as $localPath => $remotePath) {
             if (file_exists($localPath)) {
@@ -330,22 +328,27 @@ class AttachmentMover
             unset($promise);
         }
         Promise\Utils::unwrap($promises);
-        $this->db->query('START TRANSACTION');
-        try {
-            update_post_meta($attachment_id, OffloaderUtils::WP_POSTMETA_KEY, 1);
-            delete_post_meta($attachment_id, OffloaderUtils::WP_POSTMETA_ATTEMPTS_KEY);
-            delete_post_meta($attachment_id, OffloaderUtils::WP_POSTMETA_ERROR);
-            delete_post_meta($attachment_id, OffloaderUtils::WP_POSTMETA_UPLOAD_LOCK_KEY);
-            $this->db->query('COMMIT');
-        } catch (\Exception $e) {
-            $this->db->query('ROLLBACK');
-            throw $e;
-        }
+        $this->markAttachmentAsOffloaded($attachment_id);
         foreach ($files as $file) {
             $local_path = ABSPATH.$file;
             if (file_exists($local_path)) {
                 @unlink($local_path);
             }
+        }
+    }
+
+    public function markAttachmentAsOffloaded(int $attachmentId): void
+    {
+        $this->db->query('START TRANSACTION');
+        try {
+            update_post_meta($attachmentId, OffloaderUtils::WP_POSTMETA_KEY, 1);
+            delete_post_meta($attachmentId, OffloaderUtils::WP_POSTMETA_ATTEMPTS_KEY);
+            delete_post_meta($attachmentId, OffloaderUtils::WP_POSTMETA_ERROR);
+            delete_post_meta($attachmentId, OffloaderUtils::WP_POSTMETA_UPLOAD_LOCK_KEY);
+            $this->db->query('COMMIT');
+        } catch (\Exception $e) {
+            $this->db->query('ROLLBACK');
+            throw $e;
         }
     }
 }

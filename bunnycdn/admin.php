@@ -145,14 +145,14 @@ add_action('admin_notices', function () {
             'page' => 'bunnycdn',
         ], admin_url('admin.php'));
 
-        bunny_polyfill_wp_admin_notice(
+        wp_admin_notice(
             str_replace('%url%', $url, $migrationWarning),
             ['type' => 'error', 'dismissible' => true],
         );
     }
 
     if (bunnycdn_container()->getOffloaderUtils()->shouldShowSyncDelayedMessage()) {
-        bunny_polyfill_wp_admin_notice(
+        wp_admin_notice(
             sprintf(
                 /* translators: 1: <a href=...> 2: </a> */
                 esc_html__('bunny.net: There was an issue while offloading your files to the Edge Storage. To get help, please %1$sreach out to our Super Bunnies%2$s.', 'bunnycdn'),

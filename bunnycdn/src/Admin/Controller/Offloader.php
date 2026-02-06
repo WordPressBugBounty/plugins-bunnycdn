@@ -50,6 +50,7 @@ class Offloader implements ControllerInterface
             return;
         }
         if ($isAjax && isset($_POST['perform']) && 'resolve-conflict' === $_POST['perform']) {
+            check_admin_referer('bunnycdn-save-offloader');
             $id = (int) sanitize_key($_POST['attachment_id'] ?? 0);
             $keep = sanitize_key($_POST['keep'] ?? '');
             try {
@@ -111,6 +112,11 @@ class Offloader implements ControllerInterface
                 $wasEnabled = $offloaderConfig->isEnabled() && $offloaderConfig->isSyncExisting();
                 $offloaderConfig->handlePost($_POST['offloader'] ?? []);
                 $offloaderConfig->saveToWpOptions();
+                if ($offloaderConfig->isSyncExisting() && $offloaderConfig->isCronjob()) {
+                    $this->container->getOffloaderUtils()->cronEnable();
+                } else {
+                    $this->container->getOffloaderUtils()->cronDisable();
+                }
                 if (!$wasEnabled && $offloaderConfig->isEnabled() && $offloaderConfig->isSyncExisting() && $attachmentCount[AttachmentCounter::LOCAL] > 0) {
                     try {
                         $pathPrefix = $this->container->getPathPrefix();

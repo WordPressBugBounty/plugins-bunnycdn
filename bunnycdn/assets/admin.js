@@ -31,6 +31,7 @@ window.addEventListener('load', () => {
             data: {
                 action: 'bunnycdn',
                 section: 'user-data',
+                // _wpnonce: ommited for GET requests
             },
             type: 'GET',
             complete: function (response) {
@@ -65,6 +66,7 @@ window.addEventListener('load', () => {
                 action: 'bunnycdn',
                 section: 'overview',
                 perform: 'get-api-data',
+                // _wpnonce: ommited for GET requests
             },
             type: 'GET',
             complete: function (response) {
@@ -113,7 +115,7 @@ window.addEventListener('load', () => {
     document.getElementById('cdn-acceleration-enable')?.addEventListener('click', function () {
         document.querySelector('#cdn-acceleration-enable-section div.alert')?.classList.add('bn-d-none');
         document.getElementById('cdn-acceleration-enable').classList.add('loading');
-        const _wpnonce = document.getElementById('_wpnonce').value
+        const _wpnonce = document.getElementById('_wpnonce').value;
 
         jQuery.ajax({
             url: ajaxurl,
@@ -145,7 +147,6 @@ window.addEventListener('load', () => {
 
     document.getElementById('cdn-acceleration-disable-section')?.closest('form').querySelector('#website-url').addEventListener('change', function () {
         const url = this.value;
-        const _wpnonce = document.getElementById('_wpnonce').value
         document.getElementById('pullzone-id').classList.add('loading');
 
         jQuery.ajax({
@@ -155,7 +156,7 @@ window.addEventListener('load', () => {
                 section: 'cdn',
                 perform: 'get-pullzones',
                 url: url,
-                _wpnonce: _wpnonce,
+                // _wpnonce: ommited for GET requests
             },
             type: 'GET',
             complete: function (response) {
@@ -188,7 +189,7 @@ window.addEventListener('load', () => {
     document.getElementById('cdn-acceleration-disable')?.addEventListener('click', function () {
         document.querySelector('#cdn-acceleration-disable-section div.alert')?.classList.add('bn-d-none');
         document.getElementById('cdn-acceleration-disable').classList.add('loading');
-        const _wpnonce = document.getElementById('_wpnonce').value
+        const _wpnonce = document.getElementById('_wpnonce').value;
 
         jQuery.ajax({
             url: ajaxurl,
@@ -611,6 +612,7 @@ function updateOffloaderStatistics()
             action: 'bunnycdn',
             section: 'offloader',
             perform: 'get-statistics',
+            // _wpnonce: ommited for GET requests
         },
         type: 'GET',
         complete: function (response) {
@@ -647,6 +649,7 @@ function updateOffloaderSyncErrors()
             action: 'bunnycdn',
             section: 'offloader',
             perform: 'get-sync-errors',
+            // _wpnonce: ommited for GET requests
         },
         type: 'GET',
         complete: function (response) {

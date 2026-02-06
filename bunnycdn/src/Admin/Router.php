@@ -35,6 +35,11 @@ class Router
 
     public function route(bool $isAjax = false): void
     {
+        if (!current_user_can('manage_options')) {
+            $this->render401($isAjax);
+
+            return;
+        }
         $section = 'index';
         if (isset($_REQUEST['section'])) {
             $section = sanitize_key($_REQUEST['section']);
@@ -51,5 +56,16 @@ class Router
             return;
         }
         $this->container->renderTemplateFile('index.error.php', ['error' => __('Page not found', 'bunnycdn')], ['cssClass' => 'index'], '_base.index.php');
+    }
+
+    private function render401(bool $isAjax): void
+    {
+        header('HTTP/1.1 401 Unauthorized');
+        if ($isAjax) {
+            wp_send_json_error(['message' => __('Unauthorized', 'bunnycdn')], 401);
+        } else {
+            $this->container->renderTemplateFile('index.error.php', ['error' => __('Unauthorized', 'bunnycdn')], ['cssClass' => 'index'], '_base.index.php');
+        }
+        wp_die();
     }
 }
