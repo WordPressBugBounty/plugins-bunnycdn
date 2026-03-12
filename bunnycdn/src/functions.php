@@ -221,7 +221,7 @@ namespace {
         if (isset($options['align']) && in_array($options['align'], $alignOptions, true)) {
             $classNames[] = sprintf('align%s', $options['align']);
         }
-        $iframeUrl = 'https://iframe.mediadelivery.net/embed/'.$libraryId.'/'.$videoId.'?'.http_build_query($urlParams);
+        $iframeUrl = 'https://player.mediadelivery.net/embed/'.$libraryId.'/'.$videoId.'?'.http_build_query($urlParams);
         $html = '<div class="'.join(' ', $classNames).'">';
         $html .= '<div style="position:relative;padding-top:56.25%;" class="bunny-stream-video">';
         $html .= '<iframe src="'.$iframeUrl.'" loading="lazy" style="border:0;position:absolute;top:0;height:100%;width:100%;" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe>';
