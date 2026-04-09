@@ -271,6 +271,8 @@ namespace {
         if (!$offloaderConfig->isConfigured() || !$offloaderConfig->isEnabled() || !$offloaderConfig->isSyncExisting() || !$offloaderConfig->isCronjob()) {
             return;
         }
+        // clear delay warning
+        delete_option('_bunnycdn_sync_delayed_warning');
         // check if there are files left to sync
         $attachmentCounter = $container->getAttachmentCounter();
         $count = $attachmentCounter->count();
@@ -282,6 +284,15 @@ namespace {
         $result = $attachmentMover->perform(1);
         if (true === $result['success']) {
             update_option('_bunnycdn_offloader_last_sync', time());
+        }
+    }
+    function bunnycdn_offloader_sync_delayed_warning(): void
+    {
+        $container = bunnycdn_container();
+        if ($container->getOffloaderUtils()->shouldShowSyncDelayedMessage()) {
+            update_option('_bunnycdn_sync_delayed_warning', '1');
+        } else {
+            delete_option('_bunnycdn_sync_delayed_warning');
         }
     }
 }

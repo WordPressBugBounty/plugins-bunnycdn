@@ -3,7 +3,7 @@ Contributors: bunnycdn
 Tags: cdn, content delivery network, performance, bandwidth, stream, video
 Requires at least: 6.7
 Tested up to: 6.9
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -51,6 +51,9 @@ Replace `197133` with your Stream Library ID and `dc48a09e-d9bb-420a-83d7-72dc23
 All the [Embed parameters](https://docs.bunny.net/docs/stream-embedding-videos#supported-parameters) are supported.
 
 == Changelog ==
+
+= 3.0.1 =
+* offloader: improve performance around delay checks;
 
 = 3.0.0 =
 * stream: use new player;
