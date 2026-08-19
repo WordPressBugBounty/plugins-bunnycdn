@@ -344,7 +344,7 @@ class Client
     public function createStreamLibrary(string $name, array $replicationRegions): Stream\Library
     {
         $replicationRegions = array_map(fn ($item) => strtoupper($item), $replicationRegions);
-        $body = json_encode(['Name' => $name, 'ReplicationRegions' => $replicationRegions, 'PlayerVersion' => 2]);
+        $body = json_encode(['Name' => $name, 'ReplicationRegions' => $replicationRegions, 'PlayerVersion' => 2, 'BlockNoneReferrer' => false]);
         if (false === $body) {
             throw new InvalidJsonException();
         }
